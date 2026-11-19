@@ -6,7 +6,6 @@ const path = require('path');
 const app = express();
 
 // Middleware
-app.use(cors(corsOptions));
 const allowedOrigins = ['https://uigm.ppns.ac.id', 'http://localhost:6969'];
 const corsOptions = {
   origin: (origin, callback) => {
