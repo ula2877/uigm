@@ -34,8 +34,9 @@ export default async function BeritaDetailPage({ params }: { params: Promise<{ s
   const prev = currentIndex > 0 ? allNews[currentIndex - 1] : null;
   const next = currentIndex < allNews.length - 1 ? allNews[currentIndex + 1] : null;
 
-  const currentTags = item.tags
-    ? item.tags.map((t: any) => t.name)
+  const rawTags = (item as any).tags;
+  const currentTags = Array.isArray(rawTags) && rawTags.length
+    ? rawTags.map((t: any) => t.name)
     : (item.tag || "").split(",").filter(Boolean).map((t: string) => t.trim());
 
   const related = allNews
