@@ -23,10 +23,12 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     const status = err.response?.status;
-    if ((status === 401 || status === 403) && typeof window !== 'undefined') {
+    const requestUrl = err.config?.url || '';
+    const isLoginRequest = requestUrl.includes('/auth/login');
+    if ((status === 401 || status === 403) && typeof window !== 'undefined' && !isLoginRequest) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = 'https://app.elmechtechnology.com/dev/UIGM/admin';
+      window.location.href = '/admin';
     }
     return Promise.reject(err);
   }

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, FileText, Image, GraduationCap, Newspaper, File } from "lucide-react";
+import { LayoutDashboard, FileText, Image, GraduationCap, Newspaper, File, Users } from "lucide-react";
 import Link from "next/link";
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { href: "/admin/berita", icon: Newspaper, label: "Berita" },
   { href: "/admin/laporan", icon: File, label: "Laporan" },
   { href: "/admin/media", icon: Image, label: "Media" },
+  { href: "/admin/users", icon: Users, label: "User" },
 ];
 
 export default function CMSSidebar({ open, onClose }: { open: boolean; onClose: () => void }) {

@@ -142,7 +142,7 @@ export default function Hero({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.7 }}
-              className="max-w-[500px] mx-auto lg:mx-0 mb-2 lg:mb-0 [&_.cms-rich-text]:text-sm [&_.cms-rich-text]:sm:text-base [&_.cms-rich-text]:text-emerald-100/70 [&_.cms-rich-text_p]:text-sm [&_.cms-rich-text_p]:sm:text-base [&_.cms-rich-text_p]:text-emerald-100/70 [&_.cms-rich-text_p]:leading-relaxed [&_.cms-rich-text_p]:mb-0"
+              className="max-w-[500px] mx-auto lg:mx-0 mb-2 lg:mb-0 [&_.cms-rich-text]:text-sm [&_.cms-rich-text]:sm:text-base [&_.cms-rich-text]:text-white [&_.cms-rich-text_p]:text-sm [&_.cms-rich-text_p]:sm:text-base [&_.cms-rich-text_p]:text-white [&_.cms-rich-text_p]:leading-relaxed [&_.cms-rich-text_p]:mb-0"
             >
               <RichTextRenderer html={description} />
             </motion.div>

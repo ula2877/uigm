@@ -2,11 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { Menu, X, GraduationCap, Shield, ChevronDown } from "lucide-react";
+import { Menu, X, GraduationCap, Shield, ChevronDown, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getNavbarItems, getNavbarSettings } from "@/services/cms";
 import type { NavbarItem, NavbarSettings } from "@/services/cms";
+
+const rawApiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
+const normalizedBase = rawApiBase.replace(/\/+$/, "");
+const API_BASE = normalizedBase.endsWith("/api") ? normalizedBase : `${normalizedBase}/api`;
 
 const dropdownVariants: Variants = {
   hidden: { opacity: 0, y: 8, scale: 0.96 },
@@ -43,7 +47,9 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [expandedMobile, setExpandedMobile] = useState<number | null>(null);
   const [settings, setSettings] = useState<NavbarSettings | null>(null);
+  const [checkingAdmin, setCheckingAdmin] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const load = async () => {
@@ -81,6 +87,51 @@ export default function Navbar() {
     if (!href) return false;
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
+  };
+
+  const handleAdminClick = async (closeMobileMenu = false) => {
+    if (checkingAdmin) return;
+    if (closeMobileMenu) setOpen(false);
+    setCheckingAdmin(true);
+    const loginHref = settings?.admin_href || "/admin";
+
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      if (!token) {
+        router.push(loginHref);
+        return;
+      }
+
+      const res = await fetch(`${API_BASE}/auth/profile`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json().catch(() => null);
+        const user = data?.data;
+        if (user?.role === "admin") {
+          router.push("/admin/dashboard");
+          return;
+        }
+      }
+
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
+      router.push(loginHref);
+    } catch {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
+      router.push(loginHref);
+    } finally {
+      setCheckingAdmin(false);
+    }
   };
 
   return (
@@ -176,13 +227,15 @@ export default function Navbar() {
 
             <div className="flex items-center gap-3">
               {settings?.show_admin !== false && (
-                <Link
-                  href={settings?.admin_href || "/admin"}
-                  className="hidden lg:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#FBBF24] bg-[#FBBF24]/10 border border-[#FBBF24]/20 hover:bg-[#FBBF24]/20 transition-all duration-300"
+                <button
+                  type="button"
+                  onClick={() => handleAdminClick(false)}
+                  disabled={checkingAdmin}
+                  className="hidden lg:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#FBBF24] bg-[#FBBF24]/10 border border-[#FBBF24]/20 hover:bg-[#FBBF24]/20 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  <Shield className="w-3.5 h-3.5" />
+                  {checkingAdmin ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Shield className="w-3.5 h-3.5" />}
                   {settings?.admin_label || "Admin"}
-                </Link>
+                </button>
               )}
               {settings?.show_info_akademik !== false && (
                 <Link
@@ -298,14 +351,15 @@ export default function Navbar() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: navItems.length * 0.05 + 0.05, duration: 0.3 }}
                   >
-                    <Link
-                      href={settings?.admin_href || "/admin"}
-                      onClick={() => setOpen(false)}
-                      className="flex items-center gap-2 w-full px-4 py-3 rounded-xl text-sm font-medium text-[#FBBF24] bg-[#FBBF24]/10 border border-[#FBBF24]/20 mt-2"
+                    <button
+                      type="button"
+                      onClick={() => handleAdminClick(true)}
+                      disabled={checkingAdmin}
+                      className="flex items-center gap-2 w-full px-4 py-3 rounded-xl text-sm font-medium text-[#FBBF24] bg-[#FBBF24]/10 border border-[#FBBF24]/20 mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                      <Shield className="w-4 h-4" />
+                      {checkingAdmin ? <Loader2 className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
                       {settings?.admin_label || "Admin"}
-                    </Link>
+                    </button>
                   </motion.div>
                 )}
               </div>

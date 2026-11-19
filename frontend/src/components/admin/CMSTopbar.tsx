@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, ChevronRight, User, LogOut } from "lucide-react";
+import { Menu, ChevronRight, User, LogOut, UserCircle } from "lucide-react";
 import { getUser, removeToken } from "@/services/auth";
 import type { Profile } from "@/types/cms";
 
@@ -59,6 +59,14 @@ export default function CMSTopbar({ onMenuClick }: { onMenuClick: () => void }) 
             <>
               <div className="fixed inset-0 z-10" onClick={() => setMenu(false)} />
               <div className="absolute right-0 top-full mt-1 z-20 w-48 rounded-xl bg-[#1E293B] border border-white/10 shadow-2xl py-1">
+                <button
+                  onClick={() => { setMenu(false); router.push("/admin/profile"); }}
+                  className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                  <UserCircle className="w-4 h-4" />
+                  Profil
+                </button>
+                <div className="border-t border-white/5 my-1" />
                 <button
                   onClick={() => { setMenu(false); removeToken(); router.push("/admin"); }}
                   className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
