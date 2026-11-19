@@ -21,14 +21,14 @@ export default function BerandaNews({ items }: BerandaNewsProps) {
       .then((data) => {
         if (data?.length) {
           setLiveItems(data.map((n: any) => ({
-            slug: n.slug,
-            date: n.date,
-            title: n.title,
-            excerpt: n.excerpt,
-            content: n.content,
-            tag: n.tag,
-            color: n.color,
-            image: n.image,
+            slug: n.slug || "",
+            date: n.date || "",
+            title: n.title || "",
+            excerpt: n.excerpt || "",
+            content: n.content || "",
+            tag: n.tag || (Array.isArray(n.tags) ? n.tags.map((t: any) => t.name).join(", ") : ""),
+            color: n.color || "",
+            image: n.image || "",
           })));
         }
       })
