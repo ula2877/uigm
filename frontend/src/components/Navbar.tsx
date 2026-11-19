@@ -5,12 +5,8 @@ import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { Menu, X, GraduationCap, Shield, ChevronDown, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { getNavbarItems, getNavbarSettings } from "@/services/cms";
-import type { NavbarItem, NavbarSettings } from "@/services/cms";
-
-const rawApiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
-const normalizedBase = rawApiBase.replace(/\/+$/, "");
-const API_BASE = normalizedBase.endsWith("/api") ? normalizedBase : `${normalizedBase}/api`;
+import { fetchNavbarItems, fetchNavbarSettings, getCmsApiBase } from "@/lib/cms";
+import type { NavbarItem, NavbarSettings } from "@/lib/cms";
 
 const dropdownVariants: Variants = {
   hidden: { opacity: 0, y: 8, scale: 0.96 },
@@ -55,8 +51,8 @@ export default function Navbar() {
     const load = async () => {
       try {
         const [items, navbarSettings] = await Promise.all([
-          getNavbarItems(),
-          getNavbarSettings(),
+          fetchNavbarItems(),
+          fetchNavbarSettings(),
         ]);
         setNavItems(items || []);
         setSettings(navbarSettings);
@@ -102,7 +98,7 @@ export default function Navbar() {
         return;
       }
 
-      const res = await fetch(`${API_BASE}/auth/profile`, {
+      const res = await fetch(`${getCmsApiBase()}/auth/profile`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

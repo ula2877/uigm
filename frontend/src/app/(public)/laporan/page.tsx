@@ -8,7 +8,7 @@ import SectionTitle from "@/components/SectionTitle";
 import CTASection from "@/components/CTASection";
 import EmptyState from "@/components/EmptyState";
 import PdfViewer from "@/components/PdfViewer";
-import api from "@/lib/api";
+import { fetchReports, getCmsApiBase } from "@/lib/cms";
 
 interface ReportItem {
   id: number;
@@ -51,9 +51,12 @@ export default function LaporanPage() {
   const [viewerTitle, setViewerTitle] = useState("");
 
   useEffect(() => {
-    api.get("/reports").then((res) => {
-      setReports(res.data.data || []);
-    }).catch(() => {}).finally(() => setLoading(false));
+    fetchReports()
+      .then((data) => {
+        setReports((data || []) as ReportItem[]);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const years = [...new Set(reports.map((r) => getYear(r.release_date)).filter(Boolean))].sort((a, b) => (b as number) - (a as number)) as number[];
@@ -180,14 +183,14 @@ export default function LaporanPage() {
                     ) : (
                       <div className="flex gap-2">
                         <button
-                          onClick={() => { setViewerUrl(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api"}/reports/view/${report.slug}`); setViewerTitle(report.title); }}
+                          onClick={() => { setViewerUrl(`${getCmsApiBase()}/reports/view/${report.slug}`); setViewerTitle(report.title); }}
                           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0F4C81]/5 text-[#0F4C81] text-xs font-semibold hover:bg-[#0F4C81]/10 transition-all duration-300"
                         >
                           <Search className="w-3.5 h-3.5" />
                           Lihat
                         </button>
                         <a
-                          href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api"}/reports/download/${report.slug}`}
+                          href={`${getCmsApiBase()}/reports/download/${report.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0F4C81]/10 text-[#0F4C81] text-xs font-semibold hover:bg-[#0F4C81] hover:text-white transition-all duration-300"

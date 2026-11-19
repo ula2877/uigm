@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-import { getPageBySlug } from "@/services/cms";
+import { fetchCmsPage } from "@/lib/cms";
 import BlockRenderer from "./BlockRenderer";
 import type { ContentBlock } from "@/types/cms";
 
@@ -29,7 +29,7 @@ export default function CmsPage({ slug, initialData, children }: CmsPageProps) {
     let isMounted = true;
     const hasFallback = Boolean(children);
 
-    getPageBySlug(slug)
+    fetchCmsPage(slug)
       .then((page) => {
         if (!isMounted) return;
 

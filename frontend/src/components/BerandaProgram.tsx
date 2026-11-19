@@ -12,8 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { BentoItem } from "@/types";
-
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api").replace(/\/+$/, "");
+import { fetchCmsPage } from "@/lib/cms";
 
 const ICON_MAP: Record<string, React.ComponentType<any>> = {
   Factory,
@@ -41,10 +40,9 @@ export default function BerandaProgram() {
   const [items, setItems] = useState<BentoItem[]>([]);
 
   useEffect(() => {
-    fetch(`${API_BASE}/pages/program`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        const blocks = data?.data?.content ?? [];
+    fetchCmsPage("program")
+      .then((page) => {
+        const blocks = page?.content ?? [];
         const bentoBlock = blocks.find((b: any) => b.type === "bento");
         const bentoItems: BentoItem[] = bentoBlock?.data?.items ?? [];
         setItems(bentoItems);

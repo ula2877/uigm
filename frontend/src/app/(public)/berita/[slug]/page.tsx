@@ -6,30 +6,7 @@ import { Calendar, ArrowLeft, ArrowRight } from 'lucide-react';
 import RichTextRenderer from '@/components/cms/RichTextRenderer';
 import { getNewsBySlug, getNews } from '@/services/api';
 import { formatDateIndonesian, getTagColor } from '@/lib/utils';
-
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api").replace(/\/+$/, "");
-
-async function fetchNewsItem(slug: string) {
-  try {
-    const res = await fetch(`${API_BASE}/news/${slug}`, { cache: "no-store" });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.data || null;
-  } catch {
-    return null;
-  }
-}
-
-async function fetchNewsList() {
-  try {
-    const res = await fetch(`${API_BASE}/news`, { cache: "no-store" });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.data || [];
-  } catch {
-    return null;
-  }
-}
+import { fetchNewsBySlug as fetchNewsItem, fetchNewsList } from '@/lib/cms';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;

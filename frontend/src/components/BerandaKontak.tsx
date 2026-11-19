@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Mail, Phone, ArrowRight } from "lucide-react";
 import Link from "next/link";
-
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api").replace(/\/+$/, "");
+import { fetchCmsPage } from "@/lib/cms";
 
 export default function BerandaKontak() {
   const [contactInfo, setContactInfo] = useState({
@@ -15,10 +14,9 @@ export default function BerandaKontak() {
   });
 
   useEffect(() => {
-    fetch(`${API_BASE}/pages/kontak`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        const blocks = data?.data?.content ?? [];
+    fetchCmsPage("kontak")
+      .then((page) => {
+        const blocks = page?.content ?? [];
         const contactBlock = blocks.find((b: any) => b.type === "contact");
         if (contactBlock?.data) {
           setContactInfo({

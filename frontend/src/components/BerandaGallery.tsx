@@ -5,17 +5,15 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { GalleryItem } from "@/types";
-
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api").replace(/\/+$/, "");
+import { fetchCmsPage } from "@/lib/cms";
 
 export default function BerandaGallery() {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
 
   useEffect(() => {
-    fetch(`${API_BASE}/pages/galeri`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        const blocks = data?.data?.content ?? [];
+    fetchCmsPage("galeri")
+      .then((page) => {
+        const blocks = page?.content ?? [];
         const galleryBlock = blocks.find((b: any) => b.type === "gallery");
         const items: GalleryItem[] = galleryBlock?.data?.items ?? galleryBlock?.data?.images ?? [];
         setGalleryItems(items.slice(0, 6));

@@ -6,23 +6,21 @@ import { Calendar, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { NewsItem } from "@/types";
 import { formatDateIndonesian, getTagColor } from "@/lib/utils";
+import { fetchNewsList } from "@/lib/cms";
 
 interface BerandaNewsProps {
   items?: NewsItem[];
   trending?: NewsItem[];
 }
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api").replace(/\/+$/, "");
-
 export default function BerandaNews({ items }: BerandaNewsProps) {
   const [liveItems, setLiveItems] = useState<NewsItem[]>(items ?? []);
 
   useEffect(() => {
-    fetch(`${API_BASE}/news`)
-      .then((res) => res.ok ? res.json() : null)
+    fetchNewsList()
       .then((data) => {
-        if (data?.data?.length) {
-          setLiveItems(data.data.map((n: any) => ({
+        if (data?.length) {
+          setLiveItems(data.map((n: any) => ({
             slug: n.slug,
             date: n.date,
             title: n.title,

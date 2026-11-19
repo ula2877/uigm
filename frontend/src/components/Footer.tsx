@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { GraduationCap, Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
-import type { NavbarItem } from "@/services/cms";
-
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api").replace(/\/+$/, "");
+import { fetchCmsPage, fetchFooterSettings, fetchNavbarItems } from "@/lib/cms";
+import type { NavbarItem } from "@/lib/cms";
 
 const SOCIAL_ICONS: Record<string, { path: string; label: string }> = {
   facebook_url: { label: "Facebook", path: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" },
@@ -22,17 +21,17 @@ export default function Footer() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`${API_BASE}/footer/settings`).then((r) => (r.ok ? r.json() : null)),
-      fetch(`${API_BASE}/navbar`).then((r) => (r.ok ? r.json() : null)),
-      fetch(`${API_BASE}/pages/kontak`).then((r) => (r.ok ? r.json() : null)),
+      fetchFooterSettings(),
+      fetchNavbarItems(),
+      fetchCmsPage("kontak"),
     ])
-      .then(([settingsRes, navbarRes, kontakRes]) => {
-        if (settingsRes?.data) setSettings(settingsRes.data);
-        if (navbarRes?.data) {
-          setNavItems(navbarRes.data.filter((item: NavbarItem) => !item.parent_id));
+      .then(([footerSettings, navbarRes, kontakPage]) => {
+        if (footerSettings) setSettings(footerSettings);
+        if (Array.isArray(navbarRes)) {
+          setNavItems(navbarRes.filter((item: NavbarItem) => !item.parent_id));
         }
-        if (kontakRes?.data) {
-          const blocks = kontakRes.data.content ?? [];
+        if (kontakPage) {
+          const blocks = kontakPage.content ?? [];
           const contactBlock = blocks.find((b: any) => b.type === "contact");
           if (contactBlock?.data) setKontakData(contactBlock.data);
         }
