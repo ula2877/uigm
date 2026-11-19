@@ -15,10 +15,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!item) return {};
   return {
     title: item.title,
-    description: item.excerpt,
+    description: item.excerpt || "",
     openGraph: item.image
-      ? { title: item.title, description: item.excerpt, images: [item.image] }
-      : { title: item.title, description: item.excerpt },
+      ? { title: item.title, description: item.excerpt || "", images: [item.image] }
+      : { title: item.title, description: item.excerpt || "" },
   };
 }
 
@@ -53,7 +53,7 @@ export default async function BeritaDetailPage({ params }: { params: Promise<{ s
     <>
       <section className="relative min-h-[50vh] flex items-center overflow-hidden bg-[#064E3B]">
         <div className="absolute inset-0">
-          <img src={item.image} alt="" className="w-full h-full object-cover" />
+          <img src={item.image || ""} alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0" style={{
             background: [
               'radial-gradient(ellipse 70% 55% at 25% 25%, rgba(5, 150, 105, 0.35) 0%, transparent 60%)',
@@ -76,7 +76,7 @@ export default async function BeritaDetailPage({ params }: { params: Promise<{ s
           </h1>
           <div className="inline-flex items-center gap-2 text-sm text-white/80 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl mt-4">
             <Calendar className="w-4 h-4" />
-            {formatDateIndonesian(item.date)}
+            {formatDateIndonesian(item.date || "")}
           </div>
         </div>
         <div className="absolute bottom-0 left-0 w-full z-10 leading-none">
