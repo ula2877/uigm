@@ -1,0 +1,213 @@
+﻿"use client";
+
+import { motion } from "framer-motion";
+import { Star, ExternalLink } from "lucide-react";
+import type { ContentBlock } from "@/types/cms";
+import Hero from "@/components/Hero";
+import About from "@/components/About";
+import BerandaProgram from "@/components/BerandaProgram";
+import BerandaNews from "@/components/BerandaNews";
+import BerandaGallery from "@/components/BerandaGallery";
+import BerandaKontak from "@/components/BerandaKontak";
+import Partners from "@/components/Partners";
+import CTASection from "@/components/CTASection";
+import RichTextRenderer from "@/components/cms/RichTextRenderer";
+
+const DEFAULT_HERO_STATS = [
+  { value: "25+", label: "Program Studi" },
+  { value: "Unggul", label: "Akreditasi" },
+  { value: "10rb+", label: "Mahasiswa Aktif" },
+  { value: "Surabaya", label: "Kampus Utama" },
+];
+
+function normalizeHeroData(data: Record<string, any>) {
+  return {
+    badge: data.badge,
+    title: data.title,
+    subtitle: data.subtitle,
+    description: data.description,
+    image: data.image,
+    buttonLink: data.button_link || data.buttonLink,
+    buttonText: data.button_text || data.buttonText,
+    statsBadge: data.stats_badge || data.statsBadge,
+    stats: Array.isArray(data.stats) && data.stats.length > 0 ? data.stats : DEFAULT_HERO_STATS,
+    statsFooter: data.stats_footer || data.statsFooter,
+    statsCardTitle: data.stats_card_title || data.statsCardTitle,
+    statsCardDescription: data.stats_card_description || data.statsCardDescription,
+  };
+}
+
+function normalizeCTA(data: Record<string, any>) {
+  let buttons = Array.isArray(data.buttons) ? [...data.buttons] : [];
+  const standaloneText = data.button_text || data.buttonText || "";
+  const standaloneLink = data.button_link || data.buttonLink || "";
+
+      const toButton = (b: any) => {
+        if (typeof b === "string") {
+          return { label: b, href: standaloneLink, variant: "primary" as const };
+        }
+        return {
+          label: b.label || b.buttonText || b.title || standaloneText || "",
+          href: b.link || b.href || b.buttonUrl || b.button_link || standaloneLink || "",
+          variant: b.variant || "primary",
+        };
+      };
+
+  if (buttons.length === 0 && standaloneText && standaloneLink) {
+    buttons = [{ label: standaloneText, href: standaloneLink }];
+  }
+
+  return {
+    title: data.title,
+    description: data.description || data.subtitle,
+    buttons: buttons.map(toButton).filter((b) => b.label && b.href),
+    bgImage: data.bgImage || data.image,
+  };
+}
+
+function TextBlock({ data }: { data: Record<string, any> }) {
+  const sectionColor = data.section_color || data.sectionColor || "";
+  return (
+    <section className="py-20" style={sectionColor ? { backgroundColor: sectionColor } : { backgroundColor: "#F8FAFC" }}>
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
+        <div className="mx-auto max-w-4xl">
+        {data.badge && (
+          <motion.span initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="inline-block px-3 py-1 rounded-full bg-[#FBBF24]/10 text-[#FBBF24] text-xs font-semibold mb-4">
+            {data.badge}
+          </motion.span>
+        )}
+        {data.title && (
+          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="text-3xl md:text-4xl font-bold text-[#064E3B] font-[family-name:var(--font-display)] mb-4">
+            {data.title}{data.highlight && <span className="text-[#FBBF24]"> {data.highlight}</span>}
+          </motion.h2>
+        )}
+        {data.description && (
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
+            <RichTextRenderer html={data.description} />
+          </motion.div>
+        )}
+        {data.body && (
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }}>
+            <RichTextRenderer html={data.body} />
+          </motion.div>
+        )}
+      </div>
+      </div>
+    </section>
+  );
+}
+
+function FeaturesBlock({ data }: { data: Record<string, any> }) {
+  const items: any[] = data.items || [];
+  const sectionColor = data.section_color || data.sectionColor || "";
+  const itemColor = data.item_color || data.itemColor || "";
+  return (
+    <section className="py-20" style={sectionColor ? { backgroundColor: sectionColor } : { backgroundColor: "#ffffff" }}>
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
+        {data.badge && (
+          <motion.span initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="inline-block px-3 py-1 rounded-full bg-[#FBBF24]/10 text-[#FBBF24] text-xs font-semibold mb-4">
+            {data.badge}
+          </motion.span>
+        )}
+        {data.title && (
+          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-3xl md:text-4xl font-bold text-[#064E3B] font-[family-name:var(--font-display)] mb-2">
+            {data.title}{data.highlight && <span className="text-[#FBBF24]"> {data.highlight}</span>}
+          </motion.h2>
+        )}
+        {data.description && (
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="mt-2 mb-10 max-w-3xl">
+            <RichTextRenderer html={data.description} />
+          </motion.div>
+        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {items.map((item: any, i: number) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="group rounded-2xl border p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              style={{
+                backgroundColor: itemColor || "#ffffff",
+                borderColor: itemColor ? "transparent" : "#e5e7eb",
+              }}
+            >
+              {item.icon && (
+                <div className="w-12 h-12 rounded-xl bg-[#FBBF24]/10 flex items-center justify-center mb-4 group-hover:bg-[#FBBF24]/20 transition-colors">
+                  <span className="text-2xl">{item.icon}</span>
+                </div>
+              )}
+              <h3 className="text-lg font-bold text-[#064E3B] mb-2">{item.title}</h3>
+              {item.description && <RichTextRenderer html={item.description} className="cms-text-sm" />}
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PageHeroBlock({ data }: { data: Record<string, any> }) {
+  return (
+    <section
+      className="relative pt-28 pb-20 sm:pt-36 sm:pb-28 bg-[#064E3B] overflow-hidden"
+      style={data.bgImage ? { backgroundImage: `url("${data.bgImage}")`, backgroundSize: "cover", backgroundPosition: "center" } : {}}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-[#064E3B]/90 via-[#064E3B]/70 to-[#059669]/80" />
+      <div className="absolute inset-0 bg-black/30" />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white font-[family-name:var(--font-display)] mb-4">{data.title}</h1>
+        {data.subtitle && <p className="text-lg sm:text-xl text-blue-100/70 max-w-2xl mx-auto">{data.subtitle}</p>}
+      </div>
+      <div className="absolute bottom-0 left-0 w-full z-10 leading-none">
+        <svg viewBox="0 0 1440 100" fill="none" className="w-full h-auto">
+          <path
+            d="M0 40C240 80 480 20 720 50C960 80 1200 30 1440 60V100H0V40Z"
+            fill="#F8FAFC"
+            opacity="0.97"
+          />
+          <path
+            d="M0 70C240 90 480 60 720 80C960 100 1200 70 1440 85V100H0V70Z"
+            fill="#F8FAFC"
+          />
+        </svg>
+      </div>
+    </section>
+  );
+}
+
+export default function BlockRenderer({ blocks }: { blocks: ContentBlock[] }) {
+  return (
+    <>
+      {blocks.map((block, i) => {
+        switch (block.type) {
+          case "hero":
+            return <Hero key={i} {...normalizeHeroData(block.data)} />;
+          case "text":
+            return <TextBlock key={i} data={block.data} />;
+          case "features":
+            return <FeaturesBlock key={i} data={block.data} />;
+          case "statistics":
+            return <About key={i} statistics={block.data?.cards} />;
+          case "gallery":
+            return <BerandaGallery key={i} />;
+          case "program":
+            return <BerandaProgram key={i} />;
+          case "news":
+            return <BerandaNews key={i} items={block.data?.items} trending={block.data?.featured} />;
+          case "cta":
+            return <CTASection key={i} {...normalizeCTA(block.data)} />;
+          case "contact":
+            return <BerandaKontak key={i} />;
+          case "partners":
+            return <Partners key={i} partners={Array.isArray(block.data?.items) ? block.data.items : undefined} />;
+          case "pagehero":
+            return <PageHeroBlock key={i} data={block.data} />;
+          default:
+            return null;
+        }
+      })}
+    </>
+  );
+}
